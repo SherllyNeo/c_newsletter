@@ -1,0 +1,2 @@
+INSERT INTO Mailing_list (Active, LastName, FirstName, Email, AdditonalText, MailId, Template)
+VALUES (1, "Coxon", "Lizzy","coxon.elizabeth75@gmail.com","Here you go boo",2,"fact_app");
