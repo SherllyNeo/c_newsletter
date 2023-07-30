@@ -7,6 +7,7 @@
 
 
 #define fact_file "facts_store.txt"
+#define comps_file "compliments_store.txt"
 
 
 int count_lines_of_file(char* file_path) {
@@ -31,20 +32,20 @@ int count_lines_of_file(char* file_path) {
 
 }
 
-void get_random_word(char* buffer) {
-    FILE *facts;
+void get_random_word(char* file,char* buffer) {
+    FILE *words;
     size_t lineno = 0;
     size_t selectlen;
     char selected[800];
     char current[800];
-    int lines = count_lines_of_file(fact_file);
+    int lines = count_lines_of_file(file);
     int chosen_line = rand() % lines;
 
-    if ((facts = fopen(fact_file, "r")) == NULL) {
+    if ((words = fopen(file, "r")) == NULL) {
         fprintf(stderr,"Error! opening file");
         exit(0);
     }
-    while (fgets(current, sizeof(current), facts)) {
+    while (fgets(current, sizeof(current), words)) {
 	strcpy(selected, current);
 	if (chosen_line == lineno) {
 		break;
@@ -52,7 +53,7 @@ void get_random_word(char* buffer) {
 	++lineno;
 
 	}
-    fclose(facts);
+    fclose(words);
     selectlen = strlen(selected);
     if (selectlen > 0 && selected[selectlen-1] == '\n') {
         selected[selectlen-1] = '\0';
@@ -94,26 +95,32 @@ const char *data;
 }
 
 void send_email(struct Email_Sub email_sub) {
-	printf("\nsending email for --> Email: %s ,First Name: %s, Last Name: %s, Additonal Text: %s, Template: %s\n",email_sub.Email,email_sub.FirstName,email_sub.LastName,email_sub.AdditionalText,email_sub.Temp);
 	/* constant values */
 	char* from_email = "<app@sherllymail.com>";
 	char* from = "Sherlly's App <App@sherllymail.com>";
 	char* cc_addr = "Jacob <jacob@sherllymail.com>";
 
-	char to_email[30];
-	char to[30];
-	char subject[30];
-	char body[50];
+	char to_email[100];
+	char to[100];
+	char subject[200];
+	char body[1000];
 	sprintf(to_email,"<%s>",email_sub.Email);
 	sprintf(to,"%s %s <%s>",email_sub.FirstName,email_sub.LastName,email_sub.Email);
 	/*A lot of email templates require random selections*/
 	srand(time(NULL));
 	if (strncmp("fact_app",email_sub.Temp,9) == 0) {
 
-		sprintf(subject,"Sherlly's Fact app for %s",email_sub.FirstName);
+		sprintf(subject,"Sherlly's Fact app for %s\n",email_sub.FirstName);
 		char fact[800];
-		get_random_word(fact);
+		get_random_word(fact_file,fact);
 		sprintf(body,"Hey! hope you enjoy todays fact:\n %s \n %s",fact,email_sub.AdditionalText);
+	}
+	else if (strncmp("comp_app",email_sub.Temp,9) == 0) {
+
+		sprintf(subject,"Sherlly's Compliment app for %s\n",email_sub.FirstName);
+		char comp[800];
+		get_random_word(comps_file,comp);
+		sprintf(body,"\nHey! hope you have a good day queen:\n %s \n %s",comp,email_sub.AdditionalText);
 	}
 	else {
 	/* Default */
@@ -122,7 +129,7 @@ void send_email(struct Email_Sub email_sub) {
 
 	}
 
-	sprintf(payload_text,"To: %s \nFrom: %s \nCc: %s \nSubject: %s \n\n %s \n\n \n ",to,from,cc_addr,subject,body);
+	sprintf(payload_text,"To: %s \nFrom: %s \nCc: %s \nSubject: %s \n\n This is a beta version of my new app. Please tell me if there are any errors\n %s \n\n \n ",to,from,cc_addr,subject,body);
 
 
 
@@ -168,6 +175,12 @@ void send_email(struct Email_Sub email_sub) {
 	    curl_slist_free_all(recipients);
 
 	    curl_easy_cleanup(curl);
+	    printf("\nsent email - email to -->  %s %s with email: %s and additonal text:  %s using template: %s\n",
+			email_sub.FirstName,
+			email_sub.LastName,
+			email_sub.Email,
+			email_sub.AdditionalText,
+			email_sub.Temp);
 	  }
 }
 

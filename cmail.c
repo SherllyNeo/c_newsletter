@@ -16,7 +16,7 @@ int main() {
 	int size_of_array = 10;
 	struct Email_Sub* email_sub_array = malloc(size_of_array * sizeof(struct Email_Sub));
 	get_email_subs(email_sub_array,subs,size_of_array);
-	printf("\n%d\n",amount_of_subs);
+	printf("Sending to %d subscribers\n",amount_of_subs);
 
 	for (int i=0; i<amount_of_subs;i++) {
 		struct Email_Sub email_sub = email_sub_array[i];

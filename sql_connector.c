@@ -20,7 +20,7 @@ if (server == NULL || password == NULL) {
 	exit(1);
 }
 
-printf("\nServer: %s, port: %d, Password: %s\n",server,port,password);
+printf("Getting subs from \nServer: %s...\n",server,port,password);
 
 conn = mysql_init(NULL);
 /* Connect to database */
