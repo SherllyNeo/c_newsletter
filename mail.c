@@ -2,7 +2,64 @@
 #include <stdlib.h>
 #include <string.h>
 #include <curl/curl.h>
+#include <time.h>
 #include "shared.h"
+
+
+#define fact_file "facts_store.txt"
+
+
+int count_lines_of_file(char* file_path) {
+	FILE * fp;
+	int lines = 0;
+	char ch;
+	if ((fp = fopen(file_path, "r")) == NULL) {
+		fprintf(stderr,"Error! opening file");
+		exit(0);
+	    }
+
+	while(!feof(fp))
+	{
+	  ch = fgetc(fp);
+	  if(ch == '\n')
+	  {
+	    lines++;
+	  }
+	}
+
+	return lines;
+
+}
+
+void get_random_word(char* buffer) {
+    FILE *facts;
+    size_t lineno = 0;
+    size_t selectlen;
+    char selected[800];
+    char current[800];
+    int lines = count_lines_of_file(fact_file);
+    int chosen_line = rand() % lines;
+
+    if ((facts = fopen(fact_file, "r")) == NULL) {
+        fprintf(stderr,"Error! opening file");
+        exit(0);
+    }
+    while (fgets(current, sizeof(current), facts)) {
+	strcpy(selected, current);
+	if (chosen_line == lineno) {
+		break;
+	}
+	++lineno;
+
+	}
+    fclose(facts);
+    selectlen = strlen(selected);
+    if (selectlen > 0 && selected[selectlen-1] == '\n') {
+        selected[selectlen-1] = '\0';
+    }
+    strncpy(buffer,selected,800);
+
+}
 
 struct upload_status {
   size_t bytes_read;
@@ -49,9 +106,14 @@ void send_email(struct Email_Sub email_sub) {
 	char body[50];
 	sprintf(to_email,"<%s>",email_sub.Email);
 	sprintf(to,"%s %s <%s>",email_sub.FirstName,email_sub.LastName,email_sub.Email);
+	/*A lot of email templates require random selections*/
+	srand(time(NULL));
 	if (strncmp("fact_app",email_sub.Temp,9) == 0) {
+
 		sprintf(subject,"Sherlly's Fact app for %s",email_sub.FirstName);
-		sprintf(body,"Test fact app message: \n %s",email_sub.AdditionalText);
+		char fact[800];
+		get_random_word(fact);
+		sprintf(body,"Hey! hope you enjoy todays fact:\n %s \n %s",fact,email_sub.AdditionalText);
 	}
 	else {
 	/* Default */
