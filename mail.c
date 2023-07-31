@@ -9,6 +9,33 @@
 #define fact_file "facts_store.txt"
 #define comps_file "compliments_store.txt"
 
+char* format_attachment(char* file_path) {
+	char * buffer = 0;
+	long length;
+	FILE * f = fopen(file_path, "rb");
+
+	if (f)
+	{
+	  fseek (f, 0, SEEK_END);
+	  length = ftell (f);
+	  fseek (f, 0, SEEK_SET);
+	  buffer = malloc (length);
+	  if (buffer)
+	  {
+	    fread (buffer, 1, length, f);
+	  }
+	  fclose (f);
+	}
+
+	if (buffer)
+	{
+		buffer[length] = '\0';
+		return buffer;
+	}
+	return NULL;
+
+
+}
 
 int count_lines_of_file(char* file_path) {
 	FILE * fp;
@@ -103,12 +130,13 @@ void send_email(struct Email_Sub email_sub) {
 	char to_email[100];
 	char to[100];
 	char subject[200];
-	char body[1000];
+	char body[10000];
 	sprintf(to_email,"<%s>",email_sub.Email);
 	sprintf(to,"%s %s <%s>",email_sub.FirstName,email_sub.LastName,email_sub.Email);
 	/*A lot of email templates require random selections*/
 	srand(time(NULL));
 	if (strncmp("fact_app",email_sub.Temp,9) == 0) {
+		/* fact Template */
 
 		sprintf(subject,"Sherlly's Fact app for %s\n",email_sub.FirstName);
 		char fact[800];
@@ -117,12 +145,21 @@ void send_email(struct Email_Sub email_sub) {
 	}
 	else if (strncmp("comp_app",email_sub.Temp,9) == 0) {
 
+		/* compliment Template */
 		sprintf(subject,"Sherlly's Compliment app for %s\n",email_sub.FirstName);
 		char comp[800];
 		get_random_word(comps_file,comp);
 		sprintf(body,"\nHey! hope you have a good day queen:\n %s \n %s",comp,email_sub.AdditionalText);
 	}
 	else if (strncmp("mem_app",email_sub.Temp,9) == 0) {
+		/* Memory Template */
+
+		char* attachment_file = "attachments/memory.csv";
+		int attachment_size_limit = 24000;
+		char attachment_content[attachment_size_limit];
+		char* attachment_content_p = format_attachment(attachment_file);
+		strncpy(attachment_content,attachment_content_p,attachment_size_limit);
+		free(attachment_content_p);
 
 		sprintf(subject,"Sherlly's Memory app for %s\n",email_sub.FirstName);
 		int rand_int = rand() % 10;
@@ -135,7 +172,7 @@ void send_email(struct Email_Sub email_sub) {
 
 	}
 
-	sprintf(payload_text,"To: %s \nFrom: %s \nCc: %s \nSubject: %s \n\n This is a beta version of my new app. Please tell me if there are any errors\n %s \n\n \n ",to,from,cc_addr,subject,body);
+	sprintf(payload_text,"To: %s \r\nFrom: %s \r\nCc: %s \r\nSubject: %s \r\n\r\n This is a beta version of my new app. Please tell me if there are any errors\r\n %s \r\n\r\n \r\n ",to,from,cc_addr,subject,body);
 
 
 
