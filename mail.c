@@ -136,6 +136,7 @@ void send_email(struct Email_Sub email_sub) {
 	int attachment_size_limit = 24000;
 	char attachment_content[attachment_size_limit];
 	char* attachment_file;
+	char* attachment_file_name;
 
 	sprintf(to_email,"<%s>",email_sub.Email);
 	sprintf(to,"%s %s <%s>",email_sub.FirstName,email_sub.LastName,email_sub.Email);
@@ -162,6 +163,7 @@ void send_email(struct Email_Sub email_sub) {
 		has_attachment = true;
 
 		attachment_file = "attachments/memory.csv";
+		attachment_file_name = "memory_system.csv";
 		char* attachment_content_p = format_attachment(attachment_file);
 		strncpy(attachment_content,attachment_content_p,attachment_size_limit);
 		free(attachment_content_p);
@@ -179,7 +181,7 @@ void send_email(struct Email_Sub email_sub) {
 
 	}
 	if (has_attachment) {
-	sprintf(payload_text,"To: %s \r\nFrom:%s \r\nCc: %s \r\nMIME-Version: 1.0\r\nContent-Type: multipart/mixed;\r\n\tboundary=\"XXXXboundary text\"\r\nSubject: %s \r\n\r\n--XXXXboundary text\r\nContent-Type: text/plain\r\n\r\n %s \r\n\r\n--XXXXboundary text\r\nContent-Type: text/plain;\r\nContent-Disposition: attachment;\r\n\tfilename=\"%s\"\r\n\r\n %s \r\n\r\n--XXXXboundary text--\r\n",to,from,cc_addr,subject,body,attachment_file,attachment_content);
+	sprintf(payload_text,"To: %s \r\nFrom:%s \r\nCc: %s \r\nMIME-Version: 1.0\r\nContent-Type: multipart/mixed;\r\n\tboundary=\"XXXXboundary text\"\r\nSubject: %s \r\n\r\n--XXXXboundary text\r\nContent-Type: text/plain\r\n\r\n %s \r\n\r\n--XXXXboundary text\r\nContent-Type: text/plain;\r\nContent-Disposition: attachment;\r\n\tfilename=\"%s\"\r\n\r\n %s \r\n\r\n--XXXXboundary text--\r\n",to,from,cc_addr,subject,body,attachment_file_name,attachment_content);
 	}
 	else {
 	sprintf(payload_text,"To: %s \r\nFrom: %s \r\nCc: %s \r\nSubject: %s \r\n\r\n This is a beta version of my new app. Please tell me if there are any errors\r\n %s \r\n\r\n \r\n ",to,from,cc_addr,subject,body);
