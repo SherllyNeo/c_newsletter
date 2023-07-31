@@ -228,17 +228,19 @@ void send_email(struct Email_Sub email_sub) {
 	      fprintf(stderr, "curl_easy_perform() failed: %s\n",
 		      curl_easy_strerror(res_));
 	    }
-
-	    /* Free the list of recipients */
-	    curl_slist_free_all(recipients);
-
-	    curl_easy_cleanup(curl);
-	    printf("\nsent email - email to -->  %s %s with email: %s and additonal text:  %s using template: %s\n",
+	    else{
+	    		printf("\nsent email - email to -->  %s %s with email: %s and additonal text:  %s using template: %s\n",
 			email_sub.FirstName,
 			email_sub.LastName,
 			email_sub.Email,
 			email_sub.AdditionalText,
 			email_sub.Temp);
+	    }
+
+	    /* Free the list of recipients */
+	    curl_slist_free_all(recipients);
+
+	    curl_easy_cleanup(curl);
 	  }
 }
 
