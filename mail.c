@@ -142,6 +142,7 @@ void send_email(struct Email_Sub email_sub) {
 		char fact[800];
 		get_random_word(fact_file,fact);
 		sprintf(body,"Hey! hope you enjoy todays fact:\n %s \n %s",fact,email_sub.AdditionalText);
+		sprintf(payload_text,"To: %s \r\nFrom: %s \r\nCc: %s \r\nSubject: %s \r\n\r\n This is a beta version of my new app. Please tell me if there are any errors\r\n %s \r\n\r\n \r\n ",to,from,cc_addr,subject,body);
 	}
 	else if (strncmp("comp_app",email_sub.Temp,9) == 0) {
 
@@ -150,6 +151,7 @@ void send_email(struct Email_Sub email_sub) {
 		char comp[800];
 		get_random_word(comps_file,comp);
 		sprintf(body,"\nHey! hope you have a good day queen:\n %s \n %s",comp,email_sub.AdditionalText);
+	sprintf(payload_text,"To: %s \r\nFrom: %s \r\nCc: %s \r\nSubject: %s \r\n\r\n This is a beta version of my new app. Please tell me if there are any errors\r\n %s \r\n\r\n \r\n ",to,from,cc_addr,subject,body);
 	}
 	else if (strncmp("mem_app",email_sub.Temp,9) == 0) {
 		/* Memory Template */
@@ -164,15 +166,16 @@ void send_email(struct Email_Sub email_sub) {
 		sprintf(subject,"Sherlly's Memory app for %s\n",email_sub.FirstName);
 		int rand_int = rand() % 10;
 		sprintf(body,"\nHey! Today you have to study:\n %d00s \n %s",rand_int,email_sub.AdditionalText);
+	sprintf(payload_text,"To: %s \r\nFrom: %s \r\nCc: %s \r\nSubject: %s \r\n\r\n This is a beta version of my new app. Please tell me if there are any errors\r\n %s \r\n\r\n \r\n ",to,from,cc_addr,subject,body);
 	}
 	else {
 	/* Default */
 		sprintf(subject,"Error finding email sub type for %s",email_sub.FirstName);
 		sprintf(body,"Please contact jacob@sherllymail for help");
 
+	sprintf(payload_text,"To: %s \r\nFrom: %s \r\nCc: %s \r\nSubject: %s \r\n\r\n This is a beta version of my new app. Please tell me if there are any errors\r\n %s \r\n\r\n \r\n ",to,from,cc_addr,subject,body);
 	}
 
-	sprintf(payload_text,"To: %s \r\nFrom: %s \r\nCc: %s \r\nSubject: %s \r\n\r\n This is a beta version of my new app. Please tell me if there are any errors\r\n %s \r\n\r\n \r\n ",to,from,cc_addr,subject,body);
 
 
 
