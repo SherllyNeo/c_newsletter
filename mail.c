@@ -122,6 +122,12 @@ void send_email(struct Email_Sub email_sub) {
 		get_random_word(comps_file,comp);
 		sprintf(body,"\nHey! hope you have a good day queen:\n %s \n %s",comp,email_sub.AdditionalText);
 	}
+	else if (strncmp("mem_app",email_sub.Temp,9) == 0) {
+
+		sprintf(subject,"Sherlly's Memory app for %s\n",email_sub.FirstName);
+		int rand_int = rand() % 10;
+		sprintf(body,"\nHey! Today you have to study:\n %d00s \n %s",rand_int,email_sub.AdditionalText);
+	}
 	else {
 	/* Default */
 		sprintf(subject,"Error finding email sub type for %s",email_sub.FirstName);
