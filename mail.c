@@ -19,7 +19,7 @@ char* format_attachment(char* file_path) {
 	  fseek (f, 0, SEEK_END);
 	  length = ftell (f);
 	  fseek (f, 0, SEEK_SET);
-	  buffer = malloc (length);
+	  buffer = malloc (length*2);
 	  if (buffer)
 	  {
 	    fread (buffer, 1, length, f);
@@ -93,7 +93,7 @@ struct upload_status {
   size_t bytes_read;
 };
 
-char payload_text[1000];
+char payload_text[70000];
 
 
 static size_t payload_source(char *ptr,size_t size,size_t nmemb,void *userp) {
@@ -130,7 +130,7 @@ void send_email(struct Email_Sub email_sub) {
 	char to_email[100];
 	char to[100];
 	char subject[200];
-	char body[10000];
+	char body[20000];
 	sprintf(to_email,"<%s>",email_sub.Email);
 	sprintf(to,"%s %s <%s>",email_sub.FirstName,email_sub.LastName,email_sub.Email);
 	/*A lot of email templates require random selections*/
@@ -173,6 +173,7 @@ void send_email(struct Email_Sub email_sub) {
 	}
 
 	sprintf(payload_text,"To: %s \r\nFrom: %s \r\nCc: %s \r\nSubject: %s \r\n\r\n This is a beta version of my new app. Please tell me if there are any errors\r\n %s \r\n\r\n \r\n ",to,from,cc_addr,subject,body);
+
 
 
 
