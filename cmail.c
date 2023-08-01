@@ -13,7 +13,7 @@ int main() {
 
 	int amount_of_subs=0;
 	int* subs = &amount_of_subs;
-	int size_of_array = 10;
+	int size_of_array = 30;
 	struct Email_Sub* email_sub_array = malloc(size_of_array * sizeof(struct Email_Sub));
 	get_email_subs(email_sub_array,subs,size_of_array);
 	printf("Sending to %d subscribers\n",amount_of_subs);
