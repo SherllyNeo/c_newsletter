@@ -132,19 +132,17 @@ void send_email(struct Email email) {
 	char to[SIZE];
 	char subject[SUBJECT_SIZE];
 	char body[BODY_SIZE];
-	bool has_attachment = false;
-	int attachment_size_limit = 24000;
-	char attachment_content[attachment_size_limit];
+	char attachment_content[ATTACHMENT_SIZE];
 	char* attachment_file;
 	char* attachment_file_name;
 
 	sprintf(to_email,"<%s>",email.To_addr);
 	sprintf(to,"%s <%s>",email.To_name,email.To_addr);
 
-	if (email.Attachment_name && email.Attachment_path) {
+	if (strlen(email.Attachment_name) > 0 && strlen(email.Attachment_path) > 0) {
 
 	char* attachment_buffer = read_attachment(email.Attachment_path);
-	strncpy(attachment_content,attachment_buffer,attachment_size_limit);
+	strncpy(attachment_content,attachment_buffer,ATTACHMENT_SIZE);
 
 	sprintf(payload_text,"To: %s \r\nFrom:%s \r\nCc: %s \r\nMIME-Version: 1.0\r\nContent-Type: multipart/mixed;\r\n\tboundary=\"XXXXboundary text\"\r\nSubject: %s \r\n\r\n--XXXXboundary text\r\nContent-Type: text/plain\r\n\r\n %s \r\n\r\n--XXXXboundary text\r\nContent-Type: text/plain;\r\nContent-Disposition: attachment;\r\n\tfilename=\"%s\"\r\n\r\n %s \r\n\r\n--XXXXboundary text--\r\n",to,from,email.Cc_addr,email.Subject,email.Body,email.Attachment_name,attachment_content);
 	}
@@ -272,6 +270,10 @@ void send_email_to_subs(struct Email_Sub* email_sub_array, int amount_of_subs) {
 		if (attachment_path && attachment_name) {
 			strncpy(email_template.Attachment_path,attachment_path,SIZE);
 			strncpy(email_template.Attachment_name,attachment_name,SIZE);
+		}
+		else {
+			email_template.Attachment_path[0] = (char)0;
+			email_template.Attachment_name[0] = (char)0;
 		}
 
 		send_email(email_template);

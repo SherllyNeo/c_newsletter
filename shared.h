@@ -5,7 +5,8 @@
 #define SELECTION_SIZE 100
 #define BODY_SIZE 20000
 #define SUBJECT_SIZE 200
-#define FULL_PAYLOAD_SIZE 70000
+#define FULL_PAYLOAD_SIZE 900000
+#define ATTACHMENT_SIZE 500000
 
 struct Email_Sub {
 	char Temp[SIZE];
