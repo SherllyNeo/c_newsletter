@@ -208,6 +208,7 @@ void send_email(struct Email email) {
 
 void send_email_to_subs(struct Email_Sub* email_sub_array, int amount_of_subs) {
 	srand(time(NULL));
+	char* all = "\r\nThis is version two of my mailing app. Please contact me at jacob@sherllymail.com if there are any issues\r\n";
 
 	/* choose fact */
 	char fact[SELECTION_SIZE];
@@ -227,6 +228,7 @@ void send_email_to_subs(struct Email_Sub* email_sub_array, int amount_of_subs) {
 		struct Email email_template;
 
 
+		sprintf(body,"%s",all);
 
 		/* Changed based on template */
 		if (strncmp("fact_app",email_sub.Temp,9) == 0) {
