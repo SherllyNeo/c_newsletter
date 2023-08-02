@@ -33,7 +33,7 @@ exit(1);
 }
 
 /* send SQL query */
-if (mysql_query(conn, "SELECT Email,FirstName,LastName,AdditonalText,Template FROM Mailing_list WHERE Active=1")) {
+if (mysql_query(conn, "SELECT Email,FirstName,LastName,AdditonalText,Template FROM Staging_Mailing_list WHERE Active=1")) {
 fprintf(stderr, "%s\n", mysql_error(conn));
 exit(1);
 }
