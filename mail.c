@@ -5,12 +5,14 @@
 #include <time.h>
 #include "shared.h"
 #include <stdbool.h>
+#include "config.h"
 
 
 #define fact_file "facts_store.txt"
 #define comps_file "compliments_store.txt"
 
-char* format_attachment(char* file_path) {
+
+char* read_attachment(char* file_path) {
 	char * buffer = 0;
 	long length;
 	FILE * f = fopen(file_path, "rb");
@@ -64,8 +66,8 @@ void get_random_word(char* file,char* buffer) {
     FILE *words;
     size_t lineno = 0;
     size_t selectlen;
-    char selected[800];
-    char current[800];
+    char selected[SELECTION_SIZE];
+    char current[SELECTION_SIZE];
     int lines = count_lines_of_file(file);
     int chosen_line = rand() % lines;
 
@@ -86,7 +88,7 @@ void get_random_word(char* file,char* buffer) {
     if (selectlen > 0 && selected[selectlen-1] == '\n') {
         selected[selectlen-1] = '\0';
     }
-    strncpy(buffer,selected,800);
+    strncpy(buffer,selected,SELECTION_SIZE);
 
 }
 
@@ -94,7 +96,7 @@ struct upload_status {
   size_t bytes_read;
 };
 
-char payload_text[70000];
+char payload_text[FULL_PAYLOAD_SIZE];
 
 
 static size_t payload_source(char *ptr,size_t size,size_t nmemb,void *userp) {
@@ -122,74 +124,33 @@ const char *data;
 
 }
 
-void send_email(struct Email_Sub email_sub) {
-	/* constant values */
-	char* from_email = "<app@sherllymail.com>";
-	char* from = "Sherlly's App <App@sherllymail.com>";
-	char* cc_addr = "Jacob <jacob@sherllymail.com>";
 
-	char to_email[100];
-	char to[100];
-	char subject[200];
-	char body[20000];
+
+void send_email(struct Email email) {
+
+	char to_email[SIZE];
+	char to[SIZE];
+	char subject[SUBJECT_SIZE];
+	char body[BODY_SIZE];
 	bool has_attachment = false;
 	int attachment_size_limit = 24000;
 	char attachment_content[attachment_size_limit];
 	char* attachment_file;
 	char* attachment_file_name;
 
-	sprintf(to_email,"<%s>",email_sub.Email);
-	sprintf(to,"%s %s <%s>",email_sub.FirstName,email_sub.LastName,email_sub.Email);
-	/*A lot of email templates require random selections*/
-	srand(time(NULL));
-	if (strncmp("fact_app",email_sub.Temp,9) == 0) {
-		/* fact Template */
+	sprintf(to_email,"<%s>",email.To_addr);
+	sprintf(to,"%s <%s>",email.To_name,email.To_addr);
 
-		sprintf(subject,"Sherlly's Fact app for %s\n",email_sub.FirstName);
-		char fact[800];
-		get_random_word(fact_file,fact);
-		sprintf(body,"Hey! hope you enjoy todays fact:\n %s \n %s",fact,email_sub.AdditionalText);
-	}
-	else if (strncmp("comp_app",email_sub.Temp,9) == 0) {
+	if (email.Attachment_name && email.Attachment_path) {
 
-		/* compliment Template */
-		sprintf(subject,"Sherlly's Compliment app for %s\n",email_sub.FirstName);
-		char comp[800];
-		get_random_word(comps_file,comp);
-		sprintf(body,"\nHey! hope you have a good day queen:\n %s \n %s",comp,email_sub.AdditionalText);
-	}
-	else if (strncmp("mem_app",email_sub.Temp,9) == 0) {
-		/* Memory Template */
-		has_attachment = true;
+	char* attachment_buffer = read_attachment(email.Attachment_path);
+	strncpy(attachment_content,attachment_buffer,attachment_size_limit);
 
-		attachment_file = "attachments/memory.csv";
-		attachment_file_name = "memory_system.csv";
-		char* attachment_content_p = format_attachment(attachment_file);
-		strncpy(attachment_content,attachment_content_p,attachment_size_limit);
-		free(attachment_content_p);
-
-		sprintf(subject,"Sherlly's Memory app for %s\n",email_sub.FirstName);
-		int rand_int = rand() % 10;
-		sprintf(body,"\nHey! Today you have to study:\n %d00s \n %s",rand_int,email_sub.AdditionalText);
-
-
+	sprintf(payload_text,"To: %s \r\nFrom:%s \r\nCc: %s \r\nMIME-Version: 1.0\r\nContent-Type: multipart/mixed;\r\n\tboundary=\"XXXXboundary text\"\r\nSubject: %s \r\n\r\n--XXXXboundary text\r\nContent-Type: text/plain\r\n\r\n %s \r\n\r\n--XXXXboundary text\r\nContent-Type: text/plain;\r\nContent-Disposition: attachment;\r\n\tfilename=\"%s\"\r\n\r\n %s \r\n\r\n--XXXXboundary text--\r\n",to,from,email.Cc_addr,email.Subject,email.Body,email.Attachment_name,attachment_content);
 	}
 	else {
-	/* Default */
-		sprintf(subject,"Error finding email sub type for %s",email_sub.FirstName);
-		sprintf(body,"Please contact jacob@sherllymail for help");
-
+	sprintf(payload_text,"To: %s \r\nFrom: %s \r\nCc: %s \r\nSubject: %s \r\n\r\n %s \r\n\r\n \r\n ",to,from,email.Cc_addr,email.Subject,email.Body);
 	}
-	if (has_attachment) {
-	sprintf(payload_text,"To: %s \r\nFrom:%s \r\nCc: %s \r\nMIME-Version: 1.0\r\nContent-Type: multipart/mixed;\r\n\tboundary=\"XXXXboundary text\"\r\nSubject: %s \r\n\r\n--XXXXboundary text\r\nContent-Type: text/plain\r\n\r\n %s \r\n\r\n--XXXXboundary text\r\nContent-Type: text/plain;\r\nContent-Disposition: attachment;\r\n\tfilename=\"%s\"\r\n\r\n %s \r\n\r\n--XXXXboundary text--\r\n",to,from,cc_addr,subject,body,attachment_file_name,attachment_content);
-	}
-	else {
-	sprintf(payload_text,"To: %s \r\nFrom: %s \r\nCc: %s \r\nSubject: %s \r\n\r\n This is a beta version of my new app. Please tell me if there are any errors\r\n %s \r\n\r\n \r\n ",to,from,cc_addr,subject,body);
-	}
-
-
-
-
 
 	CURL *curl;
 	CURLcode res_ = CURLE_OK;
@@ -212,10 +173,10 @@ void send_email(struct Email_Sub email_sub) {
 
 	    curl_easy_setopt(curl,CURLOPT_USE_SSL,(long)CURLUSESSL_ALL);
 
-	    curl_easy_setopt(curl, CURLOPT_MAIL_FROM, from_email);
+	    curl_easy_setopt(curl, CURLOPT_MAIL_FROM, from_mail);
 
 	    recipients = curl_slist_append(recipients, to_email);
-	    recipients = curl_slist_append(recipients, to_email);
+	    recipients = curl_slist_append(recipients, Cc_addr);
 	    curl_easy_setopt(curl, CURLOPT_MAIL_RCPT, recipients);
 	    curl_easy_setopt(curl, CURLOPT_READFUNCTION, payload_source);
 	    curl_easy_setopt(curl, CURLOPT_READDATA, &upload_ctx);
@@ -228,13 +189,8 @@ void send_email(struct Email_Sub email_sub) {
 	      fprintf(stderr, "curl_easy_perform() failed: %s\n",
 		      curl_easy_strerror(res_));
 	    }
-	    else{
-	    		printf("\nsent email - email to -->  %s %s with email: %s and additonal text:  %s using template: %s\n",
-			email_sub.FirstName,
-			email_sub.LastName,
-			email_sub.Email,
-			email_sub.AdditionalText,
-			email_sub.Temp);
+	    else {
+	    	printf("\nsent email - email to -->  %s with email: %s\n",email.To_name,email.To_addr);
 	    }
 
 	    /* Free the list of recipients */
@@ -242,5 +198,92 @@ void send_email(struct Email_Sub email_sub) {
 
 	    curl_easy_cleanup(curl);
 	  }
+}
+
+
+
+
+
+
+
+
+
+void send_email_to_subs(struct Email_Sub* email_sub_array, int amount_of_subs) {
+	srand(time(NULL));
+
+	/* choose fact */
+	char fact[SELECTION_SIZE];
+	get_random_word(fact_file,fact);
+
+	/* choose compliment */
+	char comp[SELECTION_SIZE];
+	get_random_word(comps_file,comp);
+
+	for (int i=0; i<amount_of_subs;i++) {
+		/* init vars*/
+		char subject[SUBJECT_SIZE];
+		char body[BODY_SIZE];
+		char* attachment_name = NULL;
+		char* attachment_path = NULL;
+		struct Email_Sub email_sub = email_sub_array[i];
+		struct Email email_template;
+		printf("\n%s %s %s %s %s\n",email_sub.FirstName,email_sub.LastName,email_sub.Email,email_sub.AdditionalText,email_sub.Temp);
+
+
+
+		/* Changed based on template */
+		if (strncmp("fact_app",email_sub.Temp,9) == 0) {
+			/* fact Template */
+
+			sprintf(subject,"Sherlly's Fact app for %s\n",email_sub.FirstName);
+			sprintf(body,"Hey! hope you enjoy todays fact:\n %s \n %s",fact,email_sub.AdditionalText);
+		}
+		else if (strncmp("comp_app",email_sub.Temp,9) == 0) {
+
+			/* compliment Template */
+			sprintf(subject,"Sherlly's Compliment app for %s\n",email_sub.FirstName);
+			sprintf(body,"\nHey! hope you have a good day queen:\n %s \n %s",comp,email_sub.AdditionalText);
+		}
+		else if (strncmp("mem_app",email_sub.Temp,9) == 0) {
+			/* Memory Template */
+			attachment_path = "attachments/memory.csv";
+			attachment_name = "memory_system.csv";
+			sprintf(subject,"Sherlly's Memory app for %s\n",email_sub.FirstName);
+			int rand_int = rand() % 10;
+
+			sprintf(body,"\nHey! Today you have to study:\n %d00s \n %s",rand_int,email_sub.AdditionalText);
+
+
+		}
+		else {
+		/* Default */
+			sprintf(subject,"Error finding email sub type for %s",email_sub.FirstName);
+			sprintf(body,"Please contact jacob@sherllymail for help");
+
+		}
+
+		char tmp_to_name[SIZE];
+		sprintf(tmp_to_name,"%s %s", email_sub.FirstName,email_sub.LastName);
+		strncpy(email_template.To_addr,email_sub.Email,SIZE);
+		strncpy(email_template.To_name,tmp_to_name,SIZE);
+		strncpy(email_template.Cc_addr,Cc_addr,SIZE);
+		strncpy(email_template.Subject,subject,SUBJECT_SIZE);
+		strncpy(email_template.Body,body,BODY_SIZE);
+		if (attachment_path && attachment_name) {
+			strncpy(email_template.Attachment_path,attachment_path,SIZE);
+			strncpy(email_template.Attachment_name,attachment_name,SIZE);
+		}
+
+		send_email(email_template);
+
+	}
+
+
+
+	/* free the boi */
+	if (email_sub_array) {
+		free(email_sub_array);
+	}
+
 }
 

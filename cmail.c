@@ -18,26 +18,12 @@ int main() {
 	get_email_subs(email_sub_array,subs,size_of_array);
 	printf("Sending to %d subscribers\n",amount_of_subs);
 
-	for (int i=0; i<amount_of_subs;i++) {
-		struct Email_Sub email_sub = email_sub_array[i];
-
-		/* send email */
-		send_email(email_sub);
+	/* Array is freed in here */
+	for (int i=0;i<amount_of_subs;i++){
+		struct Email_Sub es = email_sub_array[i];
+ 		printf("\n%d\n",i);
 	}
-
-	if (email_sub_array) {
-		for (int i=0; i<amount_of_subs;i++) {
-		struct Email_Sub email_sub = email_sub_array[i];
-		if (email_sub.Email) {
-			free(email_sub.Email);
-			free(email_sub.Temp);
-			free(email_sub.FirstName);
-			free(email_sub.LastName);
-			free(email_sub.AdditionalText);
-		}
-		}
-		free(email_sub_array);
-	}
+	send_email_to_subs(email_sub_array,amount_of_subs);
 
 	return 0;
 

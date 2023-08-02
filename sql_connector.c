@@ -4,6 +4,8 @@
 #include <string.h>
 #include "shared.h"
 
+#define SIZE 100
+
 void get_email_subs(struct Email_Sub* email_sub_array,int* amount_of_subscribers,int size_of_array) {
 MYSQL *conn;
 MYSQL_RES *res;
@@ -47,22 +49,13 @@ while ((row = mysql_fetch_row(res)) != NULL) {
 		email_sub_array = malloc(size_of_array * sizeof(struct Email_Sub));
 	}
 
-	char *email = (char*)malloc(50 * sizeof(char));
-	sprintf(email, "%s", row[0]);
-
-	char *firstName = (char*)malloc(50 * sizeof(char));
-	sprintf(firstName, "%s", row[1]);
-
-	char *lastName = (char*)malloc(50 * sizeof(char));
-	sprintf(lastName, "%s", row[2]);
-
-	char *template = (char*)malloc(50 * sizeof(char));
-	sprintf(template, "%s", row[4]);
-
-	char *additionalText = (char*)malloc(50 * sizeof(char));
-	sprintf(additionalText, "%s", row[3]);
-
-	struct Email_Sub email_sub = {template,firstName,lastName,additionalText,email};
+	/* make email sub */
+	struct Email_Sub email_sub;
+	strncpy(email_sub.Email,row[0],SIZE);
+	strncpy(email_sub.FirstName,row[1],SIZE);
+	strncpy(email_sub.LastName,row[2],SIZE);
+	strncpy(email_sub.AdditionalText,row[3],SIZE);
+	strncpy(email_sub.Temp,row[4],SIZE);
 	email_sub_array[email_sub_count] = email_sub;
 	email_sub_count++;
 
