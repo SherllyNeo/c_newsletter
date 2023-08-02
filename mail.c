@@ -225,7 +225,6 @@ void send_email_to_subs(struct Email_Sub* email_sub_array, int amount_of_subs) {
 		char* attachment_path = NULL;
 		struct Email_Sub email_sub = email_sub_array[i];
 		struct Email email_template;
-		printf("\n%s %s %s %s %s\n",email_sub.FirstName,email_sub.LastName,email_sub.Email,email_sub.AdditionalText,email_sub.Temp);
 
 
 

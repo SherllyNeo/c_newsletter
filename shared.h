@@ -1,8 +1,8 @@
 #ifndef SHARED
 #define SHARED
 
-#define SIZE 100
-#define SELECTION_SIZE 100
+#define SIZE 500
+#define SELECTION_SIZE 500
 #define BODY_SIZE 20000
 #define SUBJECT_SIZE 200
 #define FULL_PAYLOAD_SIZE 900000
