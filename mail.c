@@ -252,7 +252,7 @@ void send_email_to_subs(struct Email_Sub* email_sub_array, int amount_of_subs) {
 
             /* golf Template */
             sprintf(subject,"Sherlly's Golf Fact app for %s\n",email_sub.FirstName);
-            sprintf(body,"\nHey! hope you enjoyed this golf factoid\n %s \n %s",comp,email_sub.AdditionalText);
+            sprintf(body,"\nHey! hope you enjoyed this golf factoid\n %s \n %s",golf_fact,email_sub.AdditionalText);
         }
         else if (strncmp("mem_app",email_sub.Temp,9) == 0) {
             /* Memory Template */
