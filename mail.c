@@ -38,7 +38,6 @@ char* read_attachment(char* file_path) {
     }
     return NULL;
 
-
 }
 
 int count_lines_of_file(char* file_path) {
@@ -143,9 +142,13 @@ void send_email(struct Email email) {
     if (strlen(email.Attachment_name) > 0 && strlen(email.Attachment_path) > 0) {
 
         char* attachment_buffer = read_attachment(email.Attachment_path);
-        strncpy(attachment_content,attachment_buffer,ATTACHMENT_SIZE);
-
-        sprintf(payload_text,"To: %s \r\nFrom:%s \r\nCc: %s \r\nMIME-Version: 1.0\r\nContent-Type: multipart/mixed;\r\n\tboundary=\"XXXXboundary text\"\r\nSubject: %s \r\n\r\n--XXXXboundary text\r\nContent-Type: text/plain\r\n\r\n %s \r\n\r\n--XXXXboundary text\r\nContent-Type: text/plain;\r\nContent-Disposition: attachment;\r\n\tfilename=\"%s\"\r\n\r\n %s \r\n\r\n--XXXXboundary text--\r\n",to,from,email.Cc_addr,email.Subject,email.Body,email.Attachment_name,attachment_content);
+        if (attachment_buffer) {
+            strncpy(attachment_content,attachment_buffer,ATTACHMENT_SIZE);
+            sprintf(payload_text,"To: %s \r\nFrom:%s \r\nCc: %s \r\nMIME-Version: 1.0\r\nContent-Type: multipart/mixed;\r\n\tboundary=\"XXXXboundary text\"\r\nSubject: %s \r\n\r\n--XXXXboundary text\r\nContent-Type: text/plain\r\n\r\n %s \r\n\r\n--XXXXboundary text\r\nContent-Type: text/plain;\r\nContent-Disposition: attachment;\r\n\tfilename=\"%s\"\r\n\r\n %s \r\n\r\n--XXXXboundary text--\r\n",to,from,email.Cc_addr,email.Subject,email.Body,email.Attachment_name,attachment_content);
+        }
+        else {
+            sprintf(payload_text,"To: %s \r\nFrom: %s \r\nCc: %s \r\nSubject: %s \r\n\r\n %s \r\n\r\n \r\n ",to,from,email.Cc_addr,email.Subject,email.Body);
+        }
     }
     else {
         sprintf(payload_text,"To: %s \r\nFrom: %s \r\nCc: %s \r\nSubject: %s \r\n\r\n %s \r\n\r\n \r\n ",to,from,email.Cc_addr,email.Subject,email.Body);
