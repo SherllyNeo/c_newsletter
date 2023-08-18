@@ -4,16 +4,17 @@
 #define SIZE 500
 #define SELECTION_SIZE 500
 #define BODY_SIZE 20000
+#define ADDR_SIZE 100
 #define SUBJECT_SIZE 200
 #define FULL_PAYLOAD_SIZE 900000
 #define ATTACHMENT_SIZE 500000
 
 struct Email_Sub {
 	char Temp[SIZE];
-	char FirstName[SIZE];
-	char LastName[SIZE];
+	char FirstName[ADDR_SIZE];
+	char LastName[ADDR_SIZE];
 	char AdditionalText[SIZE];
-	char Email[SIZE];
+	char Email[ADDR_SIZE];
 };
 
 

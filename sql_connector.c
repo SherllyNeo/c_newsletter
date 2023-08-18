@@ -21,7 +21,7 @@ if (server == NULL || password == NULL) {
 	exit(1);
 }
 
-printf("Getting subs from Server: %s...\n",server,port,password);
+printf("Getting subs from Server: %s...\n",server);
 
 conn = mysql_init(NULL);
 /* Connect to database */
@@ -66,11 +66,11 @@ while ((row = mysql_fetch_row(res)) != NULL) {
 
 	/* make email sub */
 	struct Email_Sub email_sub;
-	strncpy(email_sub.Email,row[0],SIZE);
-	strncpy(email_sub.FirstName,row[1],SIZE);
-	strncpy(email_sub.LastName,row[2],SIZE);
-	strncpy(email_sub.AdditionalText,row[3],SIZE);
-	strncpy(email_sub.Temp,row[4],SIZE);
+	strcpy(email_sub.Email,row[0]);
+	strcpy(email_sub.FirstName,row[1]);
+	strcpy(email_sub.LastName,row[2]);
+	strcpy(email_sub.AdditionalText,row[3]);
+	strcpy(email_sub.Temp,row[4]);
 	email_sub_array[email_sub_count] = email_sub;
 	email_sub_count++;
 

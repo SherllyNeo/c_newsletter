@@ -77,7 +77,7 @@ void get_random_word(char* file,char* buffer) {
     }
     while (fgets(current, sizeof(current), words)) {
         strcpy(selected, current);
-        if (chosen_line == lineno) {
+        if (chosen_line == (int)lineno) {
             break;
         }
         ++lineno;
@@ -128,13 +128,10 @@ static size_t payload_source(char *ptr,size_t size,size_t nmemb,void *userp) {
 
 void send_email(struct Email email) {
 
-    char to_email[SIZE];
-    char to[SIZE];
-    char subject[SUBJECT_SIZE];
-    char body[BODY_SIZE];
+    int offset = 3;
+    char to_email[SIZE*offset];
+    char to[SIZE*offset];
     char attachment_content[ATTACHMENT_SIZE];
-    char* attachment_file;
-    char* attachment_file_name;
 
     sprintf(to_email,"<%s>",email.To_addr);
     sprintf(to,"%s <%s>",email.To_name,email.To_addr);
