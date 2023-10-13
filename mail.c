@@ -11,6 +11,7 @@
 #define fact_file "text_sources/facts_store.txt"
 #define comps_file "text_sources/compliments_store.txt"
 #define golf_file "text_sources/golf_facts.txt"
+#define insult_file "text_sources/insults.txt"
 
 
 char* read_attachment(char* file_path) {
@@ -223,6 +224,10 @@ void send_email_to_subs(struct Email_Sub* email_sub_array, int amount_of_subs) {
     char golf_fact[SELECTION_SIZE];
     get_random_word(golf_file,golf_fact);
 
+    /* choose insult */
+    char insult[SELECTION_SIZE];
+    get_random_word(insult_file,insult);
+
     for (int i=0; i<amount_of_subs;i++) {
         /* init vars*/
         char subject[SUBJECT_SIZE];
@@ -247,6 +252,12 @@ void send_email_to_subs(struct Email_Sub* email_sub_array, int amount_of_subs) {
             /* compliment Template */
             sprintf(subject,"Sherlly's Compliment app for %s\n",email_sub.FirstName);
             sprintf(body,"\nHey! hope you have a good day queen:\n %s \n %s",comp,email_sub.AdditionalText);
+        }
+        else if (strncmp("insult_app",email_sub.Temp,9) == 0) {
+
+            /* compliment Template */
+            sprintf(subject,"Sherlly's insult app for %s\n",email_sub.FirstName);
+            sprintf(body,"\nHey! hope you have a bad day:\n %s \n %s",insult,email_sub.AdditionalText);
         }
         else if (strncmp("golf_app",email_sub.Temp,9) == 0) {
 
